@@ -27,7 +27,7 @@ jobs:
         if: matrix.sdks == 'ON'
         with:
           repository: linker-bot/linkerbot-hand-cpp-sdk
-          ref: 5e91d1b7a0efd680012a61a343940b123faf2f76
+          ref: e6b54ef04e56612d2bc49161b8b8d51782a54f32
           path: deps/modern
       - uses: actions/checkout@v4
         if: matrix.sdks == 'ON'
