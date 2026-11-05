@@ -117,3 +117,66 @@ local/trusted operation. Use `--listen` only for an explicitly trusted network. 
 serialized; a timed-out bridge is stopped and its commands are not retried automatically.
 
 See [NOTICE](NOTICE) for upstream sources and license attribution.
+
+## Teaching controls and live inspection
+
+The current Web UI has one range-aware slider and numeric editor per advertised control
+channel. Slider edits and pasted vectors are **drafts**. Only **Write** submits the complete
+vector; connecting, viewing telemetry, copying a reading or changing read rates never sends
+position, speed, torque or enable commands. Draft midpoints are not measured device values.
+Real readings appear beside each editor and in a joint monitor table. Vector indices are
+channel indices; historical speed/torque vectors may have a different layout from position.
+Unsupported controls and operations are not synthesized by the UI. Modern current limits
+are not presented as torque controls.
+
+The server maintains one read-only telemetry worker per connection, shared by all Web
+clients. `/api/state` returns channel samples, SDK metadata, tool receipt age and requested
+rates. `/api/rates` accepts a non-empty object such as `{"position":10,"force":30,"palm":5}`.
+Rates are 0–100 Hz; 0 pauses that channel. Updates are validated atomically. Physical reads
+remain serialized by Bridge; slow reads skip missed periods instead of accumulating work.
+Requested rates do not guarantee device sample rates. Defaults are position 10 Hz,
+speed/torque/current 5 Hz, force 10 Hz, palm 5 Hz, temperature/fault 1 Hz (only advertised
+channels are polled). These rates persist for the connection, not across reconnects.
+
+Finger and palm heatmaps are shown together where available. The wave chart holds the last
+180 successful new samples per matrix, using actual receipt times. Each curve is the sum
+of finite raw matrix elements, **not calibrated total force**. SDK-invalid or stale samples
+and failed reads do not add points. Heatmap scales are per-frame automatic scales;
+compare the numeric captions rather than interpreting color as an absolute physical value.
+Read errors retain the previous sample with its original receipt age and an error label.
+No missing Legacy freshness metadata is inferred. Reconnecting clears old trends and drafts.
+
+### Full-screen TUI
+
+In an interactive terminal, the existing `tui` command now opens an ANSI full-screen
+inspector. It uses the same Bridge and read-only Monitor as HTTP, with no extra Python
+packages. L30 and O30 use the advertised runtime control ranges and channel counts; the
+UI does not reuse the historical 0–255 layouts for Modern hardware.
+
+```sh
+python3 hand-tools.py tui --simulate --model L30
+python3 hand-tools.py tui --simulate --model O30
+python3 hand-tools.py tui --model O30 --sdk modern --backend minicanfd \
+  --device 0 --native-channel 0 --side right --address 0x001 --library /path/to/libcanbus.so
+```
+
+- **Tab** cycles Monitor, Controls, Tactile and Identity.
+- **Arrow keys / Page Up / Page Down** scroll the current view (left/right for wide tables).
+- Type a command and press **Enter**: `read force`, `rate force 30`, `rate palm 0`, `pause`,
+  `write position VALUES...` or `operation enable` (only if advertised).
+- **Escape** clears an unfinished command; **q** with an empty command line exits.
+- **Ctrl+C** exits and restores terminal mode and cursor visibility. Closing is not an
+  emergency stop and does not imply disable or mechanical arrival.
+
+Use `tui --plain` for the original line terminal. Redirected input/output also selects the
+line terminal automatically. The historical `v221_hand_tui` remains unchanged and opt-in.
+
+### Tests
+
+`ctest --test-dir build --output-on-failure` runs offline process/HTTP tests, read-only
+scheduler and full-screen contracts, and (when Node.js 18+ is installed) browser-handler
+unit tests without npm dependencies. CI installs Node.js 22. POSIX tests also start both
+L30 and O30 in real pseudo-terminals and check alternate-screen entry/exit; Windows console
+mode still requires manual platform acceptance. Fake-Bridge tests verify independent rates,
+slow reads, failures, and that rendering/rate edits cause no writes. These tests are not
+hardware acceptance and do not claim actual L30/O30 sensor dimensions or timing.
