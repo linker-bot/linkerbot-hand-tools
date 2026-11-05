@@ -1,7 +1,7 @@
 This repository retains its original GNU Affero General Public License v3 LICENSE.
 
 Historical source material under historical/v2.2.1 is copied from:
-https://github.com/linker-bot/linkerhand-cpp-sdk/tree/v2.2.1
+https://github.com/linker-bot/linkerbot-hand-legacy-cpp-sdk/tree/v2.2.1
 Copyright and MIT license: historical/v2.2.1/LICENSE.
 The original bytes and source commit are recorded in historical/v2.2.1/manifest.json.
 
