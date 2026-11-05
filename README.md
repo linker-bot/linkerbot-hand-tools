@@ -36,7 +36,7 @@ matrices, palm data when available, metadata and downloadable readings.
 
 Check out the three dependencies separately. The initial tested source baselines are:
 
-- Legacy SDK: `6b0a2c8a6ef8a68ae20c09a145f141a17ce09d8b` or the subsequent SDK-only package.
+- Legacy SDK: `c396633aa430257637ff452b66297fba874d81c8` (SDK-only package).
 - Modern SDK: `5e91d1b7a0efd680012a61a343940b123faf2f76`.
 - Transport: `ff429d0c0333120dd6867ee7247549e53934ed46`.
 

@@ -57,7 +57,8 @@ class ProcessTests(unittest.TestCase):
     def test_invalid_profiles_fail_without_fallback(self):
         for args in (("--model", "missing"), ("--model", "L7", "--sdk", "modern"),
                      ("--model", "O6", "--comm", "modbus"), ("--side", "missing")):
-            result = subprocess.run([executable, "--simulate", *args], capture_output=True, text=True, timeout=10)
+            simulator = str(Path(executable).with_name("hand_simulator" + Path(executable).suffix))
+            result = subprocess.run([simulator, "--simulate", *args], capture_output=True, text=True, timeout=10)
             self.assertNotEqual(result.returncode, 0)
             self.assertNotIn('"event":"ready"', result.stdout)
 

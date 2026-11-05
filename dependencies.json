@@ -1,5 +1,5 @@
 {
-  "legacy_sdk": {"repository": "https://github.com/linker-bot/linkerhand-cpp-sdk", "commit": "6b0a2c8a6ef8a68ae20c09a145f141a17ce09d8b"},
+  "legacy_sdk": {"repository": "https://github.com/linker-bot/linkerhand-cpp-sdk", "commit": "c396633aa430257637ff452b66297fba874d81c8"},
   "modern_sdk": {"repository": "https://github.com/linker-bot/linkerbot-hand-cpp-sdk", "commit": "5e91d1b7a0efd680012a61a343940b123faf2f76"},
   "transport": {"repository": "https://github.com/linker-bot/linkerbot-transport-cpp", "commit": "ff429d0c0333120dd6867ee7247549e53934ed46"}
 }
