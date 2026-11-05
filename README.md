@@ -34,11 +34,11 @@ matrices, palm data when available, metadata and downloadable readings.
 
 ## Build with both SDKs
 
-Check out the three dependencies separately. The initial tested source baselines are:
+Check out the three dependencies separately. The pinned source revisions are:
 
-- [Legacy SDK](https://github.com/linker-bot/linkerbot-hand-legacy-cpp-sdk): `55ef5d89fde5ead7233f6afe2047e1052bcc042c` (SDK-only package).
+- [Legacy SDK](https://github.com/linker-bot/linkerbot-hand-legacy-cpp-sdk): `d47c163418468739db5d8026a7ce37e43276395d` (SDK-only package).
 - Modern SDK: `5e91d1b7a0efd680012a61a343940b123faf2f76`.
-- Transport: `ff429d0c0333120dd6867ee7247549e53934ed46`.
+- Transport: `6f9bd515175090e3c8b78304ac3eee6868a0d037`.
 
 ```sh
 cmake -S . -B build \
@@ -52,8 +52,10 @@ ctest --test-dir build -C Release --output-on-failure
 
 An installed modern SDK/transport can be selected through `CMAKE_PREFIX_PATH` instead of
 source directories. The legacy package must include its maintained callback adapter
-headers; its SDK binaries remain version 2.2.1. The repository rename does not change
-the CMake package name `linkerhand-cpp-sdk`, imported target or installed library paths.
+headers; its SDK binaries remain version 2.2.1. The maintained package is named
+`linkerhand-legacy-cpp-sdk` and exports `LinkerHand::linkerhand_legacy_cpp_sdk`.
+Installation paths use `linkerhand-legacy-cpp-sdk`; prebuilt library filenames remain
+`linkerhand_cpp_sdk.*`.
 SDK options can be enabled independently.
 Use Linux x86_64/ARM64 or Windows x64 with matching SDK libraries and compiler runtimes.
 macOS supports only the dependency-free offline tool build.
