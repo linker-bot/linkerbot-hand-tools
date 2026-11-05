@@ -1,0 +1,197 @@
+{
+  "source_commit": "1b5b690e346bc00befd3a9c99ad314fe12d65989",
+  "files": [
+    {
+      "path": "LICENSE",
+      "sha256": "615e14a6f0bde67c14f9026c7ef7f2bf3c2af8778b77e7885f42e89dc469d78c"
+    },
+    {
+      "path": "can-autocfg.sh",
+      "sha256": "ad486ba7e09a02cd1dc5ac434e0a506e283ca3e13b111dcad7d9a08ecc3c5e84"
+    },
+    {
+      "path": "examples/CMakeLists.txt",
+      "sha256": "011c07df1927e8cae356591ad6303a504481fcc797221612fd8e22987d1ff8b7"
+    },
+    {
+      "path": "examples/L20_Lite/action_group_show.cpp",
+      "sha256": "c4dfda49fe7b773d91fdbfb403c96fd10c89ace292bd1e210b2f05146248c83e"
+    },
+    {
+      "path": "examples/_win_console_utf8.h",
+      "sha256": "bbf4f89b45e19a3d1af7e2490566de6392e7287d421ae4462e579160eb57cb4f"
+    },
+    {
+      "path": "examples/hand_tui.cpp",
+      "sha256": "a4c3c2a8f74af4e0a323b5574958c458796c6a1e84454716b31bc2683d5f68ee"
+    },
+    {
+      "path": "examples/sources.cmake",
+      "sha256": "7749bd0900e9b693df89868c129b3c73393b6038b469b2b5e21a8cb4807569d3"
+    },
+    {
+      "path": "examples/test.cpp",
+      "sha256": "4bf19239c87cc56ed9cbfd1cff390c919cd1f1294d18ae384151cf4c8d738886"
+    },
+    {
+      "path": "examples/test_0.cpp",
+      "sha256": "af9208310d8938e6d5a4f4379a70af0574cc46c9552e65a404af23b633af50b4"
+    },
+    {
+      "path": "examples/test_conversion.cpp",
+      "sha256": "f4702a837820ffe322e005f84d2306200bbdc01da9355dd86a0d07b1a2b2ef2a"
+    },
+    {
+      "path": "examples/test_l20_10_can_0.cpp",
+      "sha256": "35ea7485c66fef775db0dd6529075d7215529eb35c8964ea68de3cdd37a98ab6"
+    },
+    {
+      "path": "examples/test_l20_10_can_1.cpp",
+      "sha256": "24edb44ff55169a605d09f4f461e40793ce4b162ea445e8ffc7d81954bf7cf1f"
+    },
+    {
+      "path": "examples/test_l20_can_0.cpp",
+      "sha256": "ad1f35b42f3a802f4fcfb732826d4e2dde18d577286d5b0755c3b6ac4a99e172"
+    },
+    {
+      "path": "examples/test_l20_lite.cpp",
+      "sha256": "8dcb25be31f7d3b9f01b6e16d1900a3c7b927f25a9bc188be5951785de983d43"
+    },
+    {
+      "path": "examples/test_l20_lite_can_0.cpp",
+      "sha256": "3f79662a8592a350e141edc7e2b3415d6af0da5dad157393c425ae0dd12eb012"
+    },
+    {
+      "path": "examples/test_l20_lite_can_1.cpp",
+      "sha256": "643cd14560ab4138a7bb790d19a778e33ee58d040e9b32d83f3d4bc6391a57d6"
+    },
+    {
+      "path": "examples/test_l20_lite_modbus.cpp",
+      "sha256": "dfb4c23bd35d20687305d6f30e253b55ecdd8def306588e8b953e5dc0acb7e57"
+    },
+    {
+      "path": "examples/test_l21_can_0.cpp",
+      "sha256": "583efaea2773156aa758a046239657c3a64452f49104bb5379b5bb3f788de8d4"
+    },
+    {
+      "path": "examples/test_l30_canfd_0.cpp",
+      "sha256": "0f8500a4a642d0c0899cea23908b08b507b7e4b45d9d0e33e6ba53476182c5e1"
+    },
+    {
+      "path": "examples/test_l30_canfd_socket_0.cpp",
+      "sha256": "f31ce0a63f21f5db249c8350f3a4a687e784fa858692b6ea29e5b65ed28538d7"
+    },
+    {
+      "path": "examples/test_l30_canfd_socket_auto_0.cpp",
+      "sha256": "127f30dd5a5bd88e521154785acf39ea70bb3cd855a3a07631fd89ea538908bf"
+    },
+    {
+      "path": "examples/test_l6_can_0.cpp",
+      "sha256": "9a371b1870447e0f4b1d531468837b30f3be60c8041c883f042aa34844968eb4"
+    },
+    {
+      "path": "examples/test_l7_can_0.cpp",
+      "sha256": "39a8661b69bde3ad40ec92ba33e0a44d6f7548220898d077e03f4b47065cb775"
+    },
+    {
+      "path": "examples/test_l7_can_1.cpp",
+      "sha256": "abb8270e605d4173a8ad97807fa712996e23801694a6d042a08eef31ef0694d4"
+    },
+    {
+      "path": "examples/test_l7_modbus_0.cpp",
+      "sha256": "e8f25205b4c0198e48237279b5b3bbc200edb84deec19a122a2a6119d113b6e9"
+    },
+    {
+      "path": "examples/test_l7_modbus_1.cpp",
+      "sha256": "451df19a6420bd7ab16da2f373f93061e9106dbdcf048e14f83f3bd91a8e545f"
+    },
+    {
+      "path": "examples/test_o20_canfd_0.cpp",
+      "sha256": "74c4e0f25841a7e73370fde70cac8e70f12226e7d2d568b510934d201a2e3289"
+    },
+    {
+      "path": "examples/test_o20_canfd_1.cpp",
+      "sha256": "b2a4e03ceb124c32696804497299144db0f25339914e80aff3e16fb2687fc493"
+    },
+    {
+      "path": "examples/test_o20_canfd_double.cpp",
+      "sha256": "7a0b0e2a66b39011de841793dae68bb98510df13387401e92333c3c4150cef71"
+    },
+    {
+      "path": "examples/test_o20_canfd_socket_0.cpp",
+      "sha256": "93c85ca1ccd60516a980f217a656fae6a54f4ed0f0e9c0831dce8a2ccc8ef6c5"
+    },
+    {
+      "path": "examples/test_o30_canfd_0.cpp",
+      "sha256": "8bc2be3ef2e9565aceb3d12dd22d822e85914c875c7d6a5a47976fe73862cdc7"
+    },
+    {
+      "path": "examples/test_o30_canfd_socket_0.cpp",
+      "sha256": "38144afb36e55827b3abbed8c74c2fed13b927ee35e2093f5756d8041ca22fe6"
+    },
+    {
+      "path": "examples/test_o6_can_0.cpp",
+      "sha256": "e43e5809389b540660b0e3aeab2ae053ed47770ec607f5dfc34e5c8ecc6e80e9"
+    },
+    {
+      "path": "examples/test_o6_can_1.cpp",
+      "sha256": "d893c1deec1015743e99166ff076b8e7e0932673fbe73b97eed2b184e97fba1a"
+    },
+    {
+      "path": "examples/test_o6_can_3.cpp",
+      "sha256": "e926e6141d54ee80e4f3766a635bae9c250d907b8a455836501bd7af59dd94c1"
+    },
+    {
+      "path": "examples/test_o6_modbus_0.cpp",
+      "sha256": "381c708bdecf52603668e2e7bcfabfc034a75ff69eb089d8db514380850acf9a"
+    },
+    {
+      "path": "examples/test_o6_modbus_1.cpp",
+      "sha256": "9aac0d716a151b8e939413b8582be60e50457c343f364edf8ddc314476d1d5cf"
+    },
+    {
+      "path": "examples/test_o6_modbus_2.cpp",
+      "sha256": "54325c2a7412bc8380875b72c886eeca4f9c6f568a857701ef0cef5cce930dca"
+    },
+    {
+      "path": "examples/web_bridge.cpp",
+      "sha256": "c9b82cba776356c3e7e44f1cbf94930c9a7cfcd06836a15757bf87fa451eb667"
+    },
+    {
+      "path": "start-webui.sh",
+      "sha256": "e7c7c7a6b004fd0e37a55e66355e2b42139d31057097c6f3aca5e2d375c3f17c"
+    },
+    {
+      "path": "webui/README.md",
+      "sha256": "7399e95cdc37deb78d4cce5ca946278e169a0ea634cb255cc11c16197a301001"
+    },
+    {
+      "path": "webui/run.py",
+      "sha256": "4d11f26ca635e06b9173fca281a40ebbb82acc96c7eb034f084e15eac4381772"
+    },
+    {
+      "path": "webui/static/app.css",
+      "sha256": "fac4e242b07ba6bbaf3886170cc973ddde61a12b746e171fbdf55edeb800d806"
+    },
+    {
+      "path": "webui/static/app.js",
+      "sha256": "8392f87a1b489d3367c16b52755354483cccf106a4d070512193e3495cd15ef8"
+    },
+    {
+      "path": "webui/static/en_logo.png",
+      "sha256": "3d8caeed83d00fb445b1fb5f16002574236542187168c754ac54793bdae34c36"
+    },
+    {
+      "path": "webui/static/favicon.png",
+      "sha256": "bc4c03e880ffccbc750bcfdd4ee582f606a65ec4529a824f68f37377d88610b2"
+    },
+    {
+      "path": "webui/static/index.html",
+      "sha256": "9adc6d371455ea202bbf2f69ea9c0bc3a29985a29fb12bd341066c0c15c21dd1"
+    },
+    {
+      "path": "webui/static/logo.png",
+      "sha256": "a97f608e0d79f073287f81a9823f9b1feef451bd5f9799c04e3305cf3b3fde63"
+    }
+  ]
+}

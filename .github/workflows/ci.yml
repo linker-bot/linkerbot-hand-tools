@@ -1,0 +1,55 @@
+name: Hand tools
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    name: Native tools (${{ matrix.os }}, SDKs=${{ matrix.sdks }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, windows-2022]
+        sdks: ['OFF', 'ON']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        if: matrix.sdks == 'ON'
+        with:
+          repository: linker-bot/linkerhand-cpp-sdk
+          ref: 6b0a2c8a6ef8a68ae20c09a145f141a17ce09d8b
+          path: deps/legacy
+      - uses: actions/checkout@v4
+        if: matrix.sdks == 'ON'
+        with:
+          repository: linker-bot/linkerbot-hand-cpp-sdk
+          ref: 5e91d1b7a0efd680012a61a343940b123faf2f76
+          path: deps/modern
+      - uses: actions/checkout@v4
+        if: matrix.sdks == 'ON'
+        with:
+          repository: linker-bot/linkerbot-transport-cpp
+          ref: ff429d0c0333120dd6867ee7247549e53934ed46
+          path: deps/transport
+      - name: Configure
+        shell: bash
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
+            -DHAND_TOOLS_MODERN=${{ matrix.sdks }} -DHAND_TOOLS_LEGACY=${{ matrix.sdks }} \
+            -DHAND_TOOLS_MODERN_SOURCE_DIR="$GITHUB_WORKSPACE/deps/modern" \
+            -DHAND_TOOLS_LEGACY_ROOT="$GITHUB_WORKSPACE/deps/legacy" \
+            -DHAND_TOOLS_TRANSPORT_SOURCE_DIR="$GITHUB_WORKSPACE/deps/transport" \
+            -DHAND_TOOLS_HISTORICAL_EXAMPLES=${{ matrix.sdks }}
+      - name: Build
+        run: cmake --build build --config Release --parallel 4
+      - name: Test offline clients and HTTP
+        run: ctest --test-dir build -C Release --output-on-failure --no-tests=error
+      - name: Install and check launcher
+        shell: bash
+        run: |
+          cmake --install build --config Release --prefix "$GITHUB_WORKSPACE/install"
+          python "$GITHUB_WORKSPACE/install/bin/hand-tools.py" models --bridge "$GITHUB_WORKSPACE/install/bin/hand_bridge"

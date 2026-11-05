@@ -1,0 +1,4 @@
+build*/
+_deps/
+__pycache__/
+*.pyc
