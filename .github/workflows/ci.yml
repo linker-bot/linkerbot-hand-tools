@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
         if: matrix.sdks == 'ON'
         with:
-          repository: linker-bot/linkerhand-cpp-sdk
+          repository: linker-bot/linkerbot-hand-legacy-cpp-sdk
           ref: 55ef5d89fde5ead7233f6afe2047e1052bcc042c
           path: deps/legacy
       - uses: actions/checkout@v4
