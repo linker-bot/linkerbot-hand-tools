@@ -19,7 +19,9 @@ readings explicitly carry unknown freshness; the tool does not invent device tim
 physical units or acknowledgments. Legacy palm and aggregate reads remain available only
 where historical interfaces exist. Unsupported operations raise a visible error.
 
-Simulation has a separate backend with no SDK/driver calls. It exercises framing, alias
+Simulation and catalogue queries run in hand_simulator, which is built without either SDK
+or vendor runtime linkage. Physical connections run in hand_bridge. This also avoids
+legacy DLL initializers being loaded merely to display the model catalogue. It exercises framing, alias
 selection, validation, process lifetime, terminal commands, HTTP access and tactile rendering.
 It does not simulate arbitration, physical timing or device firmware.
 

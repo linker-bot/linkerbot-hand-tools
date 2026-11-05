@@ -27,7 +27,7 @@ python3 hand-tools.py web
 ```
 
 Open `http://127.0.0.1:8080/`, choose **Offline simulation** and connect. Simulation is
-labelled in the UI and does not open any SDK or driver. It is not hardware acceptance.
+labelled in the UI and runs in a separate executable that does not link either SDK or any vendor runtime. It is not hardware acceptance.
 The terminal supports `info`, `read CHANNEL`, `write CHANNEL VALUES`, `operation NAME`
 and `watch CHANNEL`. The Web UI shares the same serialized backend and displays tactile
 matrices, palm data when available, metadata and downloadable readings.
@@ -98,7 +98,7 @@ and [connection examples](examples/o30_vendor.py).
 
 ## Installation and validation
 
-`cmake --install build --config Release --prefix /desired/prefix` installs `hand_bridge`,
+`cmake --install build --config Release --prefix /desired/prefix` installs `hand_bridge`, `hand_simulator`,
 `bin/hand-tools.py` and the Python application. Run `python3 /desired/prefix/bin/hand-tools.py models`.
 SDK and adapter runtimes must remain available. The local Windows install stages required
 legacy runtime DLLs; the repository does not vendor them.

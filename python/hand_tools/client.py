@@ -54,6 +54,9 @@ class Bridge:
         self.logs = collections.deque(maxlen=100)
         self.sequence = 0
         self.closed = False
+        executable = Path(executable)
+        if config.get("simulate"):
+            executable = executable.with_name("hand_simulator.exe" if os.name == "nt" else "hand_simulator")
         self.process = subprocess.Popen([str(executable), *bridge_arguments(config)],
                                         stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                         stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace", bufsize=1)
@@ -154,6 +157,13 @@ class Bridge:
 
 
 def catalogue(executable):
-    result = subprocess.run([str(executable), "--list"], capture_output=True, text=True,
+    executable = Path(executable)
+    simulator = executable.with_name("hand_simulator.exe" if os.name == "nt" else "hand_simulator")
+    result = subprocess.run([str(simulator), "--list"], capture_output=True, text=True,
                             encoding="utf-8", timeout=10, check=True)
-    return json.loads(result.stdout)
+    data = json.loads(result.stdout)
+    manifest = executable.with_name("hand-tools-build.json")
+    if manifest.is_file():
+        build = json.loads(manifest.read_text(encoding="utf-8"))
+        data.update({"modern": bool(build.get("modern")), "legacy": bool(build.get("legacy"))})
+    return data
