@@ -37,7 +37,7 @@ matrices, palm data when available, metadata and downloadable readings.
 Check out the three dependencies separately. The pinned source revisions are:
 
 - [Legacy SDK](https://github.com/linker-bot/linkerbot-hand-legacy-cpp-sdk): `d47c163418468739db5d8026a7ce37e43276395d` (SDK-only package).
-- Modern SDK: `5e91d1b7a0efd680012a61a343940b123faf2f76`.
+- Modern SDK: `e6b54ef04e56612d2bc49161b8b8d51782a54f32`.
 - Transport: `6f9bd515175090e3c8b78304ac3eee6868a0d037`.
 
 ```sh
