@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LinkerBot Hand Tools</title><link rel="stylesheet" href="/app.css"></head>
+<body><header><h1>LinkerBot Hand Tools</h1><span id="status">Disconnected</span><button id="disconnect" disabled>Disconnect</button></header>
+<main><section><h2>Connection</h2><form id="connect">
+<label>Model<select name="model" id="models"></select></label>
+<label>SDK<select name="sdk"><option value="auto">Preferred SDK</option><option value="modern">Modern SDK</option><option value="legacy">Legacy compatibility</option></select></label>
+<label>Side<select name="side"><option>left</option><option>right</option></select></label>
+<label>Backend<select name="backend"><option>socketcan</option><option>pcan</option><option>minicanfd</option><option>slcan</option></select></label>
+<label>Channel<input name="channel" placeholder="can0 / PCAN_USBBUS1 / COM3"></label>
+<label>Communication<select name="comm"><option value="">Model default</option><option>modbus</option><option>can</option><option>canfd</option></select></label>
+<details><summary>Address, library and timing</summary><div class="grid">
+<label>Device address<input name="address" placeholder="SDK default"></label><label>Host address<input name="host" placeholder="SDK default"></label>
+<label>Vendor library<input name="library" placeholder="Optional explicit path"></label>
+<label>Vendor device index<input name="device" placeholder="0"></label><label>Vendor channel index<input name="native-channel" placeholder="0"></label>
+<label>Nominal bitrate<input name="bitrate" placeholder="1000000"></label><label>Data bitrate<input name="data-bitrate" placeholder="5000000"></label>
+<label>Serial baud<input name="serial-baud" placeholder="115200"></label><label>RTU parity<select name="parity"><option>N</option><option>E</option><option>O</option></select></label>
+<label>SLCAN firmware<select name="slcan-protocol"><option>lawicel-classic</option><option>canable-fd</option></select></label>
+</div></details><label class="inline"><input name="simulate" type="checkbox">Offline simulation</label><button>Connect</button></form>
+<p class="note">Connecting reads device identity and capabilities. Controls use the ranges and units shown below. SDK selection is never changed after a connection failure.</p></section>
+<section><h2>Device</h2><p id="identity">No device connected</p><details><summary>Capabilities and provenance</summary><pre id="meta"></pre></details><div id="operations"></div></section>
+<section class="wide"><h2>Controls</h2><p class="note">Writes require the complete displayed vector. A dispatch or acknowledgement does not confirm mechanical arrival.</p><div id="controls"></div></section>
+<section class="wide"><h2>Readings and tactile data</h2><div class="toolbar"><select id="channel"></select><button id="read" disabled>Read</button><label class="inline"><input id="poll" type="checkbox">Poll selected reading</label><button id="download" disabled>Download reading</button></div>
+<div id="matrices"></div><pre id="reading"></pre></section><section class="wide"><h2>Result</h2><pre id="result" role="status"></pre></section>
+</main><script src="/app.js"></script></body></html>

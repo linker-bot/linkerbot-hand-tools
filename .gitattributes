@@ -1,0 +1,2 @@
+# Preserve upstream bytes, including original line endings, on every checkout.
+historical/v2.2.1/** -text
