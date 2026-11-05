@@ -3,6 +3,9 @@ import argparse
 import hashlib
 import http.client
 import json
+import os
+import select
+import time
 from pathlib import Path
 import subprocess
 import sys
@@ -76,6 +79,50 @@ class ProcessTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('"simulation"', result.stdout)
 
+    @unittest.skipIf(os.name == "nt", "POSIX PTY integration")
+    def test_fullscreen_l30_o30_without_hardware(self):
+        import pty
+        for model in ("L30", "O30"):
+            master, slave = pty.openpty()
+            import fcntl
+            import struct
+            import termios
+            fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 40, 120, 0, 0))
+            environment = dict(os.environ, COLUMNS="120", LINES="40")
+            child = subprocess.Popen([sys.executable, str(root / "hand-tools.py"), "tui", "--simulate",
+                                      "--model", model, "--bridge", executable],
+                                     stdin=slave, stdout=slave, stderr=slave, close_fds=True, env=environment)
+            output = b""
+            try:
+                deadline = time.monotonic() + 10
+                while b"No motion target" not in output and time.monotonic() < deadline:
+                    if select.select([master], [], [], .1)[0]:
+                        output += os.read(master, 65536)
+                self.assertIn(model.encode(), output)
+                self.assertIn(b"SIMULATION", output)
+                self.assertIn(b"No motion target", output)
+                os.write(master, b"q")
+                deadline = time.monotonic() + 5
+                # Drain concurrently: a full PTY output queue can block screen restore.
+                while time.monotonic() < deadline:
+                    if select.select([master], [], [], .1)[0]:
+                        try:
+                            output += os.read(master, 65536)
+                        except OSError:
+                            break
+                    if child.poll() is not None and b"\x1b[?1049l" in output:
+                        break
+                child.wait(timeout=1)
+                self.assertEqual(child.returncode, 0)
+                self.assertIn(b"\x1b[?1049h", output)
+                self.assertIn(b"\x1b[?1049l", output)
+            finally:
+                if child.poll() is None:
+                    child.kill()
+                    child.wait()
+                os.close(master)
+                os.close(slave)
+
     def test_historical_sources_are_intact(self):
         history = root / "historical/v2.2.1"
         manifest = json.loads((history / "manifest.json").read_text())
@@ -124,6 +171,41 @@ class HttpTests(unittest.TestCase):
         self.assertEqual(self.request("/api/connect", {"simulate": True})[0], 400)
         self.assertEqual(self.request("/api/disconnect", {})[0], 200)
         self.assertEqual(self.request("/api/request", {"action": "read", "channel": "position"})[0], 400)
+
+    def test_simultaneous_monitor_rates_and_read_only_connection(self):
+        for model, count in (("L30", 17), ("O30", 20)):
+            self.assertEqual(self.request("/api/connect", {"model": model, "simulate": True})[0], 200)
+            deadline = time.monotonic() + 5
+            state = {}
+            while time.monotonic() < deadline:
+                state = json.loads(self.request("/api/state")[1])
+                if {"position", "temperature", "fault", "force", "palm"} <= set(state["samples"]):
+                    break
+                time.sleep(.02)
+            self.assertTrue(state["connected"])
+            self.assertEqual(state["samples"]["position"]["data"]["raw"], [0] * count)
+            self.assertIn("matrices", state["samples"]["force"]["data"])
+            self.assertIn("matrices", state["samples"]["palm"]["data"])
+            rates = {name: 0 for name in state["rates"]}
+            self.assertEqual(self.request("/api/rates", rates)[0], 200)
+            self.assertEqual(self.request("/api/rates", {"force": 30})[0], 200)
+            for bad in ({"force": -1}, {"force": 101}, {"force": True}, {"missing": 2}, {"force": "10"}):
+                self.assertEqual(self.request("/api/rates", bad)[0], 400)
+            self.assertEqual(self.request("/api/rates", {"force": 1}, origin="http://other.example")[0], 403)
+            self.assertEqual(json.loads(self.request("/api/request", {"action":"read", "channel":"position"})[1])["data"]["raw"], [0] * count)
+            self.assertEqual(self.request("/api/disconnect", {})[0], 200)
+            self.assertFalse(json.loads(self.request("/api/state")[1])["connected"])
+
+    def test_dead_bridge_can_reconnect_and_state_does_not_claim_connected(self):
+        self.assertEqual(self.request("/api/connect", {"model": "O30", "simulate": True})[0], 200)
+        connection_id = json.loads(self.request("/api/state")[1])["connection_id"]
+        self.server.manager.bridge.close()
+        self.assertFalse(json.loads(self.request("/api/state")[1])["connected"])
+        self.assertIsNone(json.loads(self.request("/api/meta")[1]))
+        self.assertEqual(self.request("/api/connect", {"model": "L30", "simulate": True})[0], 200)
+        state = json.loads(self.request("/api/state")[1])
+        self.assertEqual(state["meta"]["model"], "L30")
+        self.assertGreater(state["connection_id"], connection_id)
 
     def test_reject_cross_origin_and_unknown_connection_fields(self):
         self.assertEqual(self.request("/api/connect", {"simulate": True}, origin="http://other.example")[0], 403)

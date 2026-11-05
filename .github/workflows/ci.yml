@@ -35,6 +35,9 @@ jobs:
           repository: linker-bot/linkerbot-transport-cpp
           ref: 6f9bd515175090e3c8b78304ac3eee6868a0d037
           path: deps/transport
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: Configure
         shell: bash
         run: |

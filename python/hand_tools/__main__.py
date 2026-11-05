@@ -1,6 +1,7 @@
 import argparse
 import cmd
 import json
+import sys
 import time
 
 from .client import Bridge, catalogue, default_bridge
@@ -68,6 +69,7 @@ def main():
     parser.add_argument("--listen", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8080)
     parser.add_argument("--simulate", action="store_true")
+    parser.add_argument("--plain", action="store_true", help="Use the line terminal instead of full-screen TUI")
     for name, default in (("sdk", "auto"), ("model", "L7"), ("side", "left"), ("backend", "socketcan"),
                           ("channel", ""), ("comm", ""), ("library", ""), ("address", None), ("host", None),
                           ("device", None), ("native-channel", None), ("bitrate", None), ("data-bitrate", None),
@@ -89,10 +91,14 @@ def main():
             server.server_close()
         return
     config = {key.replace("_", "-"): value for key, value in vars(args).items()
-              if key not in {"command", "arguments", "bridge", "listen", "port"} and value is not None}
+              if key not in {"command", "arguments", "bridge", "listen", "port", "plain"} and value is not None}
     with Bridge(args.bridge, config) as bridge:
         if args.command == "tui":
-            Terminal(bridge).cmdloop()
+            if not args.plain and sys.stdin.isatty() and sys.stdout.isatty():
+                from .tui import run
+                run(bridge)
+            else:
+                Terminal(bridge).cmdloop()
         elif args.command == "info":
             display(bridge.meta)
         else:

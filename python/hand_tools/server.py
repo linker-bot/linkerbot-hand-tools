@@ -6,6 +6,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
 from .client import Bridge, catalogue
+from .monitor import Monitor
 
 
 class Manager:
@@ -14,25 +15,47 @@ class Manager:
         self.catalogue = catalogue(executable)
         self.lock = threading.RLock()
         self.bridge = None
+        self.monitor = None
+        self.connection_id = 0
 
     def connect(self, config):
         with self.lock:
+            if self.bridge and (self.bridge.closed or self.bridge.process.poll() is not None):
+                self.close()
             if self.bridge:
                 raise ValueError("Disconnect the current device before opening another")
             self.bridge = Bridge(self.executable, config)
+            self.connection_id += 1
+            self.monitor = Monitor(self.bridge)
+            self.monitor.start()
             return self.bridge.meta
 
     def close(self):
         with self.lock:
             if self.bridge:
+                self.monitor.stop()
                 self.bridge.close()
+                self.monitor.join()
                 self.bridge = None
+                self.monitor = None
 
     def request(self, action, channel, values):
         with self.lock:
             if not self.bridge:
                 raise ValueError("No device is connected")
             return self.bridge.request(action, channel, values)
+
+    def state(self):
+        with self.lock:
+            if not self.monitor:
+                return {"connected": False, "meta": None, "rates": {}, "samples": {}}
+            return {**self.monitor.snapshot(), "connection_id": self.connection_id}
+
+    def set_rates(self, rates):
+        with self.lock:
+            if not self.monitor or not self.monitor.snapshot()["connected"]:
+                raise ValueError("No device is connected")
+            return self.monitor.set_rates(rates)
 
 
 def create_server(executable, host="127.0.0.1", port=8080):
@@ -60,9 +83,11 @@ def create_server(executable, host="127.0.0.1", port=8080):
             path = urlparse(self.path).path
             if path == "/api/models":
                 return self.send(200, manager.catalogue)
+            if path == "/api/state":
+                return self.send(200, manager.state())
             if path == "/api/meta":
-                with manager.lock:
-                    return self.send(200, manager.bridge.meta if manager.bridge else None)
+                state = manager.state()
+                return self.send(200, state["meta"] if state["connected"] else None)
             files = {"/": ("index.html", "text/html; charset=utf-8"),
                      "/app.js": ("app.js", "text/javascript; charset=utf-8"),
                      "/app.css": ("app.css", "text/css; charset=utf-8")}
@@ -89,6 +114,8 @@ def create_server(executable, host="127.0.0.1", port=8080):
                 elif self.path == "/api/disconnect":
                     manager.close()
                     result = None
+                elif self.path == "/api/rates":
+                    result = manager.set_rates(payload)
                 elif self.path == "/api/request":
                     result = manager.request(payload.get("action"), payload.get("channel", ""), payload.get("values", []))
                 else:
