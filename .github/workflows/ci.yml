@@ -21,19 +21,19 @@ jobs:
         if: matrix.sdks == 'ON'
         with:
           repository: linker-bot/linkerbot-hand-legacy-cpp-sdk
-          ref: d47c163418468739db5d8026a7ce37e43276395d
+          ref: c162cea9e89062b0f0e22dba98c19fe12f1f76bf
           path: deps/legacy
       - uses: actions/checkout@v4
         if: matrix.sdks == 'ON'
         with:
           repository: linker-bot/linkerbot-hand-cpp-sdk
-          ref: e6b54ef04e56612d2bc49161b8b8d51782a54f32
+          ref: f88198c770190b5e29aa2d2f8b443f027fee54ff
           path: deps/modern
       - uses: actions/checkout@v4
         if: matrix.sdks == 'ON'
         with:
           repository: linker-bot/linkerbot-transport-cpp
-          ref: 6f9bd515175090e3c8b78304ac3eee6868a0d037
+          ref: 0e190032d65ed0b315337b45b3779cf4f650ed68
           path: deps/transport
       - uses: actions/setup-node@v4
         with:
@@ -56,3 +56,69 @@ jobs:
         run: |
           cmake --install build --config Release --prefix "$GITHUB_WORKSPACE/install"
           python "$GITHUB_WORKSPACE/install/bin/hand-tools.py" models --bridge "$GITHUB_WORKSPACE/install/bin/hand_bridge"
+
+  released-sdk:
+    name: Published SDK (${{ matrix.runner }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            asset: Linux-x86_64-ubuntu24.04
+          - runner: ubuntu-24.04-arm
+            asset: Linux-aarch64-ubuntu24.04
+          - runner: windows-2022
+            asset: Windows-x64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: linker-bot/linkerbot-hand-legacy-cpp-sdk
+          ref: c162cea9e89062b0f0e22dba98c19fe12f1f76bf
+          path: deps/legacy
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Download the matching released SDK and checksum
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release download v0.3.3 --repo linker-bot/linkerbot-hand-cpp-sdk \
+            --pattern 'linkerbot-hand-cpp-0.3.3-${{ matrix.asset }}-*-Release*' --dir "$RUNNER_TEMP/sdk-download"
+      - name: Verify and unpack SDK
+        id: sdk
+        shell: python
+        run: |
+          import hashlib, os, pathlib, tarfile, zipfile
+          download = pathlib.Path(os.environ['RUNNER_TEMP']) / 'sdk-download'
+          archives = [p for p in download.iterdir() if p.name.endswith(('.tar.gz', '.zip'))]
+          assert len(archives) == 1, archives
+          archive = archives[0]
+          checksum = pathlib.Path(str(archive) + '.sha256').read_text().split()[0]
+          assert hashlib.sha256(archive.read_bytes()).hexdigest() == checksum
+          destination = pathlib.Path(os.environ['RUNNER_TEMP']) / 'released-sdk'
+          destination.mkdir()
+          if archive.name.endswith('.zip'):
+              with zipfile.ZipFile(archive) as packed:
+                  packed.extractall(destination)
+          else:
+              with tarfile.open(archive) as packed:
+                  packed.extractall(destination, filter='data')
+          roots = list(destination.iterdir())
+          assert len(roots) == 1 and roots[0].is_dir(), roots
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('prefix=' + roots[0].as_posix() + '\n')
+      - name: Build and test both adapters with the released hand and transport SDKs
+        shell: bash
+        run: |
+          cmake -S . -B build-released -DCMAKE_BUILD_TYPE=Release \
+            -DHAND_TOOLS_MODERN=ON -DHAND_TOOLS_LEGACY=ON \
+            -DHAND_TOOLS_LEGACY_ROOT="$GITHUB_WORKSPACE/deps/legacy" \
+            -DCMAKE_PREFIX_PATH="${{ steps.sdk.outputs.prefix }}"
+          cmake --build build-released --config Release --parallel 4
+          ctest --test-dir build-released -C Release --output-on-failure --no-tests=error
+          cmake --install build-released --config Release --prefix "$GITHUB_WORKSPACE/install-released"
+          python "$GITHUB_WORKSPACE/install-released/bin/hand-tools.py" models \
+            --bridge "$GITHUB_WORKSPACE/install-released/bin/hand_bridge"
