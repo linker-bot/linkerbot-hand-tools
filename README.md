@@ -36,9 +36,9 @@ matrices, palm data when available, metadata and downloadable readings.
 
 Check out the three dependencies separately. The pinned source revisions are:
 
-- [Legacy SDK](https://github.com/linker-bot/linkerbot-hand-legacy-cpp-sdk): `d47c163418468739db5d8026a7ce37e43276395d` (SDK-only package).
-- Modern SDK: `e6b54ef04e56612d2bc49161b8b8d51782a54f32`.
-- Transport: `6f9bd515175090e3c8b78304ac3eee6868a0d037`.
+- [Legacy SDK](https://github.com/linker-bot/linkerbot-hand-legacy-cpp-sdk): `c162cea9e89062b0f0e22dba98c19fe12f1f76bf` (SDK-only package).
+- Modern SDK v0.3.3: `f88198c770190b5e29aa2d2f8b443f027fee54ff`.
+- Transport v0.3.4: `0e190032d65ed0b315337b45b3779cf4f650ed68`.
 
 ```sh
 cmake -S . -B build \
@@ -51,7 +51,11 @@ ctest --test-dir build -C Release --output-on-failure
 ```
 
 An installed modern SDK/transport can be selected through `CMAKE_PREFIX_PATH` instead of
-source directories. The legacy package must include its maintained callback adapter
+source directories. Modern builds require hand SDK 0.3.3 or newer in the 0.3 minor
+line; either SDK adapter requires transport 0.3.4 or newer in that minor line.
+Rebuild tools and adapters with matching headers and libraries. No new physical
+hardware, firmware/driver, timing or device-soak acceptance is claimed by this update.
+The legacy package must include its maintained callback adapter
 headers; its SDK binaries remain version 2.2.1. The maintained package is named
 `linkerhand-legacy-cpp-sdk` and exports `LinkerHand::linkerhand_legacy_cpp_sdk`.
 Installation paths use `linkerhand-legacy-cpp-sdk`; prebuilt library filenames remain

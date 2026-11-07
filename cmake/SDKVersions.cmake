@@ -1,0 +1,10 @@
+set(HAND_TOOLS_TRANSPORT_MIN_VERSION 0.3.4)
+set(HAND_TOOLS_MODERN_MIN_VERSION 0.3.3)
+
+function(hand_tools_require_version dependency version minimum)
+    string(REGEX MATCH "^[0-9]+[.][0-9]+" _actual_line "${version}")
+    string(REGEX MATCH "^[0-9]+[.][0-9]+" _required_line "${minimum}")
+    if(NOT _actual_line STREQUAL _required_line OR version VERSION_LESS minimum)
+        message(FATAL_ERROR "${dependency} requires ${minimum} or newer in the same minor line; found '${version}'")
+    endif()
+endfunction()
